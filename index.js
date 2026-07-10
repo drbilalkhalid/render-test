@@ -21,6 +21,8 @@ let notes = [
   },
 ]
 
+app.use(express.static('dist'))
+
 app.use(cors())
 app.use(express.json())
 
@@ -40,7 +42,6 @@ app.get('/api/notes', (request, response) => {
 })
 
 app.get('/api/notes/:id', (request, response) => {
-  console.log(request.headers)
   const id = request.params.id
   const note = notes.find((n) => n.id === id)
 
