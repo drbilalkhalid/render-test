@@ -1,4 +1,6 @@
 requests/
 node_modules/
 .env
+.prettierrc
 notes-frontend/
+mongo.js
