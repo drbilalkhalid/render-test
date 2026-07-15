@@ -10,10 +10,8 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Note.deleteMany({})
-  let noteObject = new Note(helper.initialNotes[0])
-  await noteObject.save()
-  noteObject = new Note(helper.initialNotes[1])
-  await noteObject.save()
+
+  await Note.insertMany(helper.initialNotes)
 })
 
 test('notes are returned as json', async () => {
@@ -84,10 +82,21 @@ test('a specific note can be viewed', async () => {
 test('an request with non existed note id shouldn not be viewed', async () => {
   const nonExistingID = await helper.nonExistingId()
 
-  await api
-    .get(`/api/notes/${nonExistingID}`)
-    .expect(404)
+  await api.get(`/api/notes/${nonExistingID}`).expect(404)
+})
 
+test('a note can be deleted', async () => {
+  const notesAtStart = await helper.notesInDb()
+  const noteToDelete = notesAtStart[0]
+
+  await api.delete(`/api/notes/${noteToDelete.id}`).expect(204)
+
+  const notesAtEnd = await helper.notesInDb()
+
+  const ids = notesAtEnd.map((n) => n.id)
+  assert(!notesAtEnd.includes(ids.id))
+
+  assert.strictEqual(notesAtEnd.length, helper.initialNotes.length - 1)
 })
 
 after(async () => {
